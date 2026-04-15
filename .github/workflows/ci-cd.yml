@@ -22,7 +22,7 @@ jobs:
         run: npm install 
       # Verificacion de codigo con ruff  
       - name: Check code with ruff 
-        working-directory: src 
+        working-directory: app
         run: ruff check . 
       # Login a GitHub Container Registry  
       - name: Login to GitHub Container Registry 
