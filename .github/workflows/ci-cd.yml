@@ -1,0 +1,40 @@
+name: IMPREMENTACION DE CI/CD CON GITHUB ACTIONS – DOCKER  
+on: 
+  push: 
+    branches: [ "main" ] 
+permissions: 
+  contents: read 
+  packages: write # Permiso para escribir en GitHub Container  
+jobs: 
+  test_and_build:  
+    runs-on: ubuntu-latest 
+    steps:  
+      - uses: actions/checkout@v4 
+      - name: Set up Python 3.11 
+        uses: actions/setup-python@v3 
+        with:
+          python-version: "3.11" 
+      # Instalacion de dependencias de python 
+      - name: Install dependencies 
+        run: pip install -r requirements.txt 
+      # Instalacion de dependencias de node 
+      - name: Install dependencies node 
+        run: npm install 
+      # Verificacion de codigo con ruff  
+      - name: Check code with ruff 
+        working-directory: src 
+        run: ruff check . 
+      # Login a GitHub Container Registry  
+      - name: Login to GitHub Container Registry 
+        uses: docker/login-action@v3 
+        with: 
+          registry: ghcr.io 
+          username: ${{ github.actor }} 
+          password: ${{ secrets.GITHUB_TOKEN }} 
+      # Construccion y push de la imagen Docker a GitHub Container 
+      - name: Build and push 
+        uses: docker/build-push-action@v6
+        with: 
+          push: true 
+          tags: ghcr.io/ricky1029/devops-ricardo_proyecto:latest 
+      # ghcr.io/cuenta_usuario/nombre_repositorio:tag
