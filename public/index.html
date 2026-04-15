@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Viewport para responsividad -->
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=5,viewport-fit=cover"
+    />
+
+    <!-- PWA Primary Color -->
+    <meta name="theme-color" content="#1a3a6b" />
+    <meta name="msapplication-TileColor" content="#1a3a6b" />
+
+    <!-- SEO -->
+    <title>SG-Préstamos - Sistema de Gestión de Préstamos</title>
+    <meta
+      name="description"
+      content="Sistema completo de gestión de préstamos de equipos tecnológicos para instituciones educativas. Solicita, gestiona y administra préstamos de forma eficiente."
+    />
+    <meta
+      name="keywords"
+      content="préstamos, equipos, tecnología, gestión, administración, educación, institución"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SG-Préstamos - Sistema de Gestión" />
+    <meta
+      property="og:description"
+      content="Sistema de gestión de préstamos de equipos tecnológicos"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/assets/images/icon.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SG-Préstamos" />
+    <meta
+      name="twitter:description"
+      content="Sistema de gestión de préstamos de equipos"
+    />
+
+    <!-- Apple iOS & Mobile -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="SG-Préstamos" />
+    <link rel="apple-touch-icon" href="/assets/images/icon.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="shortcut icon" href="/assets/images/favicon.png" />
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="/styles.css" />
+
+    <!-- Preconnect to improve performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://firebaseapp.com" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+
+      #root {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Loading splash */
+      .splash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a3a6b 0%, #007bff 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
+      }
+
+      .splash-content {
+        text-align: center;
+        color: white;
+      }
+
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+      }
+
+      .splash-title {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .splash-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.05);
+        }
+      }
+
+      /* Responsive utilities */
+      @media (max-width: 768px) {
+        body {
+          font-size: 14px;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+      }
+
+      /* PWA install prompt */
+      .install-prompt {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        display: none;
+        align-items: center;
+        gap: 12px;
+        z-index: 1000;
+        max-width: 90%;
+      }
+
+      .install-prompt.show {
+        display: flex;
+      }
+
+      .install-prompt button {
+        background: #1a3a6b;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .install-prompt button:hover {
+        background: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Splash -->
+    <div id="splash" class="splash">
+      <div class="splash-content">
+        <svg class="splash-logo" viewBox="0 0 100 100" fill="white">
+          <rect
+            x="10"
+            y="10"
+            width="80"
+            height="80"
+            rx="10"
+            fill="white"
+            opacity="0.2"
+          />
+          <path d="M50 25 L75 40 L75 70 L50 85 L25 70 L25 40 Z" fill="white" />
+        </svg>
+        <div class="splash-title">SG-PRÉSTAMOS</div>
+        <div class="splash-subtitle">Cargando...</div>
+      </div>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div id="install-prompt" class="install-prompt">
+      <span>📱 Instala SG-Préstamos en tu dispositivo</span>
+      <button id="install-button">Instalar</button>
+      <button id="dismiss-button" style="background: transparent; color: #666">
+        Ahora no
+      </button>
+    </div>
+
+    <!-- Root -->
+    <div id="root"></div>
+
+    <script>
+      // Console logging para debug
+      console.log("Index.html cargado");
+
+      // Remove splash when app loads
+      function removeSplash() {
+        const splash = document.getElementById("splash");
+        if (splash) {
+          console.log("Removiendo splash screen");
+          splash.style.opacity = "0";
+          setTimeout(() => {
+            splash.remove();
+            console.log("Splash screen removido");
+          }, 300);
+        }
+      }
+
+      // Remover splash después de un tiempo máximo incluso si no carga
+      setTimeout(removeSplash, 3000);
+
+      window.addEventListener("load", () => {
+        console.log("Window loaded");
+        setTimeout(removeSplash, 500);
+      });
+
+      // Agregar error handler global
+      window.addEventListener("error", (e) => {
+        console.error("Error global capturado:", e.error);
+        removeSplash(); // Remover splash en caso de error
+      });
+
+      window.addEventListener("unhandledrejection", (e) => {
+        console.error("Promise rechazada:", e.reason);
+        removeSplash(); // Remover splash en caso de error
+      });
+
+      // PWA Install Prompt
+      let deferredPrompt;
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        console.log("beforeinstallprompt event fired");
+        e.preventDefault();
+        deferredPrompt = e;
+
+        const installPrompt = document.getElementById("install-prompt");
+        const installButton = document.getElementById("install-button");
+        const dismissButton = document.getElementById("dismiss-button");
+
+        if (!localStorage.getItem("pwa-dismissed")) {
+          setTimeout(() => installPrompt.classList.add("show"), 3000);
+        }
+
+        installButton.addEventListener("click", async () => {
+          installPrompt.classList.remove("show");
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User response: ${outcome}`);
+          deferredPrompt = null;
+        });
+
+        dismissButton.addEventListener("click", () => {
+          installPrompt.classList.remove("show");
+          localStorage.setItem("pwa-dismissed", "true");
+        });
+      });
+
+      // Service Worker Registration - Desactivado temporalmente para evitar problemas de caché
+      if ("serviceWorker" in navigator && false) {
+        window.addEventListener("load", () => {
+          // Primero, desregistrar cualquier SW existente
+          navigator.serviceWorker
+            .getRegistrations()
+            .then(function (registrations) {
+              for (let registration of registrations) {
+                registration.unregister();
+              }
+            });
+
+          // Luego registrar el nuevo
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((reg) => console.log("Service Worker registrado:", reg.scope))
+            .catch((err) =>
+              console.log("Error al registrar Service Worker:", err),
+            );
+        });
+      }
+    </script>
+  </body>
+</html>

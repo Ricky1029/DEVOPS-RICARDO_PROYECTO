@@ -1,0 +1,617 @@
+=====================================================================
+   BACKEND API - ENDPOINTS DE NOTIFICACIONES PUSH
+   Sistema de Gestión de Préstamos
+=====================================================================
+
+BASE_URL: http://217.182.64.251:8002
+
+=====================================================================
+   1. REGISTRAR TOKEN PUSH DEL USUARIO
+=====================================================================
+
+POST /usuarios/push-token
+
+Descripción:
+  Registra el token de Expo Push Notifications del dispositivo del usuario
+  para poder enviarle notificaciones push.
+
+Body (JSON):
+{
+  "usuarioId": 123,                    // ID del usuario (int)
+  "pushToken": "ExponentPushToken[...]", // Token de Expo
+  "dispositivo": {                      // Opcional
+    "plataforma": "android|ios",        // Sistema operativo
+    "modelo": "Pixel 5",                // Modelo del dispositivo
+    "version": "12"                     // Versión del OS
+  }
+}
+
+Respuesta exitosa (200/201):
+{
+  "success": true,
+  "message": "Token registrado correctamente"
+}
+
+Respuesta error (400/500):
+{
+  "success": false,
+  "message": "Descripción del error"
+}
+
+---------------------------------------------------------------------
+FUNCIÓN PYTHON (FastAPI):
+---------------------------------------------------------------------
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import Optional, Dict
+
+router = APIRouter()
+
+class DispositivoInfo(BaseModel):
+    plataforma: Optional[str] = None
+    modelo: Optional[str] = None
+    version: Optional[str] = None
+
+class RegistrarTokenData(BaseModel):
+    usuarioId: int
+    pushToken: str
+    dispositivo: Optional[DispositivoInfo] = None
+
+@router.post("/usuarios/push-token")
+async def registrar_token_push(data: RegistrarTokenData):
+    """
+    Registra el token de Expo Push Notifications del usuario
+    """
+    try:
+        # Buscar si el usuario ya tiene un token registrado
+        # Si existe, actualizar; si no, crear nuevo
+        
+        # Ejemplo con base de datos:
+        # token_existente = db.query(PushTokens).filter(
+        #     PushTokens.usuario_id == data.usuarioId
+        # ).first()
+        
+        # if token_existente:
+        #     token_existente.push_token = data.pushToken
+        #     token_existente.plataforma = data.dispositivo.plataforma
+        #     token_existente.modelo = data.dispositivo.modelo
+        #     token_existente.version = data.dispositivo.version
+        #     token_existente.updated_at = datetime.now()
+        # else:
+        #     nuevo_token = PushTokens(
+        #         usuario_id=data.usuarioId,
+        #         push_token=data.pushToken,
+        #         plataforma=data.dispositivo.plataforma,
+        #         modelo=data.dispositivo.modelo,
+        #         version=data.dispositivo.version
+        #     )
+        #     db.add(nuevo_token)
+        # 
+        # db.commit()
+        
+        return {
+            "success": True,
+            "message": "Token registrado correctamente"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+=====================================================================
+   2. OBTENER NOTIFICACIONES DEL USUARIO
+=====================================================================
+
+GET /notificaciones/usuario/{usuarioId}
+
+Descripción:
+  Obtiene todas las notificaciones de un usuario, ordenadas por fecha
+  (más recientes primero).
+
+Parámetros:
+  - usuarioId: ID del usuario (path parameter)
+
+Respuesta exitosa (200):
+[
+  {
+    "id": 1,                           // ID de la notificación
+    "usuarioId": 123,                  // ID del usuario
+    "tipo": "prestamo_aprobado",       // Tipo de notificación
+    "titulo": "Préstamo Aprobado",     // Título
+    "mensaje": "Tu solicitud...",      // Mensaje
+    "leida": false,                    // Si fue leída
+    "datos": {                         // Datos adicionales (JSON)
+      "prestamoId": 456,
+      "equipoNombre": "Laptop HP"
+    },
+    "createdAt": "2026-02-26T10:30:00Z"  // Fecha de creación
+  },
+  ...
+]
+
+Tipos de notificación válidos:
+  - "prestamo_aprobado"
+  - "prestamo_rechazado"
+  - "prestamo_recordatorio"
+  - "prestamo_devolucion"
+  - "equipo_disponible"
+  - "sistema"
+
+---------------------------------------------------------------------
+FUNCIÓN PYTHON (FastAPI):
+---------------------------------------------------------------------
+
+from datetime import datetime
+from typing import List, Dict, Any
+
+class Notificacion(BaseModel):
+    id: int
+    usuarioId: int
+    tipo: str
+    titulo: str
+    mensaje: str
+    leida: bool
+    datos: Optional[Dict[str, Any]] = None
+    createdAt: datetime
+
+@router.get("/notificaciones/usuario/{usuario_id}", response_model=List[Notificacion])
+async def obtener_notificaciones_usuario(usuario_id: int):
+    """
+    Obtiene todas las notificaciones de un usuario
+    """
+    try:
+        # Consultar notificaciones desde la base de datos
+        # notificaciones = db.query(Notificaciones).filter(
+        #     Notificaciones.usuario_id == usuario_id
+        # ).order_by(Notificaciones.created_at.desc()).all()
+        
+        # Convertir a formato de respuesta
+        # notificaciones_list = [
+        #     {
+        #         "id": n.id,
+        #         "usuarioId": n.usuario_id,
+        #         "tipo": n.tipo,
+        #         "titulo": n.titulo,
+        #         "mensaje": n.mensaje,
+        #         "leida": n.leida,
+        #         "datos": json.loads(n.datos) if n.datos else None,
+        #         "createdAt": n.created_at
+        #     }
+        #     for n in notificaciones
+        # ]
+        
+        # return notificaciones_list
+        
+        # Ejemplo temporal:
+        return []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+=====================================================================
+   3. MARCAR NOTIFICACIÓN COMO LEÍDA
+=====================================================================
+
+PATCH /notificaciones/{notificacionId}/leer
+
+Descripción:
+  Marca una notificación específica como leída.
+
+Parámetros:
+  - notificacionId: ID de la notificación (path parameter)
+
+Body: No requiere
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "message": "Notificación marcada como leída"
+}
+
+---------------------------------------------------------------------
+FUNCIÓN PYTHON (FastAPI):
+---------------------------------------------------------------------
+
+@router.patch("/notificaciones/{notificacion_id}/leer")
+async def marcar_notificacion_leida(notificacion_id: int):
+    """
+    Marca una notificación como leída
+    """
+    try:
+        # Buscar la notificación
+        # notificacion = db.query(Notificaciones).filter(
+        #     Notificaciones.id == notificacion_id
+        # ).first()
+        
+        # if not notificacion:
+        #     raise HTTPException(status_code=404, detail="Notificación no encontrada")
+        
+        # notificacion.leida = True
+        # notificacion.fecha_leida = datetime.now()
+        # db.commit()
+        
+        return {
+            "success": True,
+            "message": "Notificación marcada como leída"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+=====================================================================
+   4. MARCAR TODAS LAS NOTIFICACIONES COMO LEÍDAS
+=====================================================================
+
+PATCH /notificaciones/usuario/{usuarioId}/leer-todas
+
+Descripción:
+  Marca todas las notificaciones de un usuario como leídas.
+
+Parámetros:
+  - usuarioId: ID del usuario (path parameter)
+
+Body: No requiere
+
+Respuesta exitosa (200):
+{
+  "success": true,
+  "message": "Todas las notificaciones marcadas como leídas",
+  "cantidad": 5  // Cantidad de notificaciones actualizadas
+}
+
+---------------------------------------------------------------------
+FUNCIÓN PYTHON (FastAPI):
+---------------------------------------------------------------------
+
+@router.patch("/notificaciones/usuario/{usuario_id}/leer-todas")
+async def marcar_todas_leidas(usuario_id: int):
+    """
+    Marca todas las notificaciones de un usuario como leídas
+    """
+    try:
+        # Actualizar todas las notificaciones del usuario
+        # cantidad = db.query(Notificaciones).filter(
+        #     Notificaciones.usuario_id == usuario_id,
+        #     Notificaciones.leida == False
+        # ).update({
+        #     "leida": True,
+        #     "fecha_leida": datetime.now()
+        # })
+        # db.commit()
+        
+        return {
+            "success": True,
+            "message": "Todas las notificaciones marcadas como leídas",
+            "cantidad": 0  # cantidad
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+=====================================================================
+   5. ENVIAR NOTIFICACIÓN PUSH (DESDE EL BACKEND)
+=====================================================================
+
+Esta función se debe llamar DESDE TU BACKEND cuando ocurre un evento
+importante (aprobar préstamo, rechazar préstamo, etc.).
+
+NO es un endpoint expuesto al frontend, sino una función auxiliar que
+llamas desde tus endpoints existentes.
+
+---------------------------------------------------------------------
+FUNCIÓN PYTHON - ENVIAR NOTIFICACIÓN PUSH:
+---------------------------------------------------------------------
+
+import requests
+from typing import List, Dict, Any
+
+def enviar_notificacion_push(
+    push_tokens: List[str],
+    titulo: str,
+    mensaje: str,
+    datos: Dict[str, Any] = None
+):
+    """
+    Envía notificaciones push usando el servicio de Expo
+    
+    Args:
+        push_tokens: Lista de tokens de Expo Push Notifications
+        titulo: Título de la notificación
+        mensaje: Mensaje de la notificación
+        datos: Datos adicionales (diccionario)
+    """
+    
+    # Filtrar tokens válidos
+    tokens_validos = [
+        token for token in push_tokens 
+        if token and token.startswith('ExponentPushToken[')
+    ]
+    
+    if not tokens_validos:
+        return
+    
+    # Construir los mensajes
+    mensajes = [
+        {
+            "to": token,
+            "sound": "default",
+            "title": titulo,
+            "body": mensaje,
+            "data": datos or {},
+            "priority": "high",
+            "channelId": "default"
+        }
+        for token in tokens_validos
+    ]
+    
+    # Enviar a Expo Push Notification Service
+    try:
+        response = requests.post(
+            'https://exp.host/--/api/v2/push/send',
+            json=mensajes,
+            headers={
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            print(f"Notificaciones enviadas: {result}")
+        else:
+            print(f"Error al enviar notificaciones: {response.text}")
+            
+    except Exception as e:
+        print(f"Error al enviar notificaciones push: {e}")
+
+
+# FUNCIÓN AUXILIAR: Guardar notificación en la base de datos
+def crear_notificacion_db(
+    usuario_id: int,
+    tipo: str,
+    titulo: str,
+    mensaje: str,
+    datos: Dict[str, Any] = None
+):
+    """
+    Guarda una notificación en la base de datos
+    """
+    # nueva_notificacion = Notificaciones(
+    #     usuario_id=usuario_id,
+    #     tipo=tipo,
+    #     titulo=titulo,
+    #     mensaje=mensaje,
+    #     datos=json.dumps(datos) if datos else None,
+    #     leida=False,
+    #     created_at=datetime.now()
+    # )
+    # db.add(nueva_notificacion)
+    # db.commit()
+    pass
+
+
+=====================================================================
+   6. INTEGRAR NOTIFICACIONES EN TU ENDPOINT DE APROBAR/RECHAZAR
+=====================================================================
+
+Ya tienes este endpoint funcionando:
+  PUT /prestamos/uriel/{id}
+
+Necesitas MODIFICARLO para que también:
+  1. Guarde la notificación en la base de datos
+  2. Envíe la notificación push al usuario
+
+---------------------------------------------------------------------
+EJEMPLO - MODIFICAR TU ENDPOINT EXISTENTE:
+---------------------------------------------------------------------
+
+@router.put("/prestamos/uriel/{id}")
+async def actualizar_prestamo(id: int, prestamo: PrestamoUpdate):
+    """
+    Actualiza el estado de un préstamo y envía notificación al usuario
+    """
+    try:
+        # 1. Actualizar el préstamo en la base de datos
+        # (Tu lógica actual)
+        # prestamo_db = db.query(Prestamos).filter(Prestamos.id == id).first()
+        # if not prestamo_db:
+        #     raise HTTPException(status_code=404, detail="Préstamo no encontrado")
+        
+        # prestamo_db.estado = prestamo.estado
+        # prestamo_db.fecha_aprobacion = prestamo.fecha_aprobacion
+        # db.commit()
+        
+        # 2. Obtener información del préstamo para la notificación
+        # usuario_id = prestamo_db.id_usuario
+        # equipo_nombre = prestamo_db.articulo_nombre  # o buscar en tabla equipos
+        
+        # 3. Si el estado cambió a "aceptado" o "rechazado", enviar notificación
+        if prestamo.estado == "aceptado":
+            # Crear notificación en BD
+            # crear_notificacion_db(
+            #     usuario_id=usuario_id,
+            #     tipo="prestamo_aprobado",
+            #     titulo="¡Préstamo Aprobado!",
+            #     mensaje=f"Tu solicitud de préstamo para {equipo_nombre} ha sido aprobada.",
+            #     datos={
+            #         "prestamoId": id,
+            #         "equipoNombre": equipo_nombre,
+            #         "estado": "aceptado"
+            #     }
+            # )
+            
+            # Obtener token push del usuario
+            # token = db.query(PushTokens).filter(
+            #     PushTokens.usuario_id == usuario_id
+            # ).first()
+            
+            # if token and token.push_token:
+            #     enviar_notificacion_push(
+            #         push_tokens=[token.push_token],
+            #         titulo="¡Préstamo Aprobado!",
+            #         mensaje=f"Tu solicitud de préstamo para {equipo_nombre} ha sido aprobada.",
+            #         datos={
+            #             "prestamoId": id,
+            #             "equipoNombre": equipo_nombre,
+            #             "tipo": "prestamo_aprobado"
+            #         }
+            #     )
+            pass
+            
+        elif prestamo.estado == "rechazado":
+            # Similar al caso de "aceptado" pero con mensaje de rechazo
+            # crear_notificacion_db(
+            #     usuario_id=usuario_id,
+            #     tipo="prestamo_rechazado",
+            #     titulo="Préstamo Rechazado",
+            #     mensaje=f"Tu solicitud de préstamo para {equipo_nombre} ha sido rechazada.",
+            #     datos={
+            #         "prestamoId": id,
+            #         "equipoNombre": equipo_nombre,
+            #         "estado": "rechazado"
+            #     }
+            # )
+            
+            # Enviar push
+            # (similar al caso de aceptado)
+            pass
+        
+        return {
+            "success": True,
+            "message": "Préstamo actualizado correctamente"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+=====================================================================
+   7. ESTRUCTURA DE LA BASE DE DATOS
+=====================================================================
+
+Tabla: push_tokens
+---------------------------------------------------------------------
+id             INT (PRIMARY KEY, AUTO_INCREMENT)
+usuario_id     INT (FOREIGN KEY -> usuarios.id)
+push_token     VARCHAR(255) (Token de Expo)
+plataforma     VARCHAR(20) (android/ios)
+modelo         VARCHAR(100)
+version        VARCHAR(50)
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
+
+Índices:
+  - UNIQUE (usuario_id, push_token)
+
+
+Tabla: notificaciones
+---------------------------------------------------------------------
+id             INT (PRIMARY KEY, AUTO_INCREMENT)
+usuario_id     INT (FOREIGN KEY -> usuarios.id)
+tipo           VARCHAR(50) (prestamo_aprobado, prestamo_rechazado, etc.)
+titulo         VARCHAR(255)
+mensaje        TEXT
+datos          JSON (datos adicionales)
+leida          BOOLEAN (default: false)
+fecha_leida    TIMESTAMP (nullable)
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
+
+Índices:
+  - INDEX (usuario_id, created_at)
+  - INDEX (usuario_id, leida)
+
+
+=====================================================================
+   8. SQL PARA CREAR LAS TABLAS
+=====================================================================
+
+-- Tabla de tokens push
+CREATE TABLE push_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    push_token VARCHAR(255) NOT NULL,
+    plataforma VARCHAR(20),
+    modelo VARCHAR(100),
+    version VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_token (usuario_id, push_token)
+);
+
+-- Tabla de notificaciones
+CREATE TABLE notificaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    mensaje TEXT NOT NULL,
+    datos JSON,
+    leida BOOLEAN DEFAULT FALSE,
+    fecha_leida TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_usuario_created (usuario_id, created_at),
+    INDEX idx_usuario_leida (usuario_id, leida)
+);
+
+
+=====================================================================
+   9. DEPENDENCIAS PYTHON NECESARIAS
+=====================================================================
+
+pip install requests  # Para enviar notificaciones push a Expo
+
+
+=====================================================================
+   10. RESUMEN DE FLUJO COMPLETO
+=====================================================================
+
+1. Usuario abre la app por primera vez
+   └─> Frontend solicita permisos de notificaciones
+   └─> Frontend obtiene ExponentPushToken
+   └─> Frontend envía token a: POST /usuarios/push-token
+
+2. Admin aprueba/rechaza un préstamo
+   └─> Frontend llama: PUT /prestamos/uriel/{id}
+   └─> Backend actualiza estado en BD
+   └─> Backend crea registro en tabla 'notificaciones'
+   └─> Backend obtiene push_token del usuario
+   └─> Backend llama a Expo Push API para enviar notificación
+   └─> Usuario recibe notificación en su dispositivo
+
+3. Usuario abre pantalla de notificaciones
+   └─> Frontend llama: GET /notificaciones/usuario/{usuarioId}
+   └─> Backend devuelve lista de notificaciones
+
+4. Usuario toca una notificación
+   └─> Frontend llama: PATCH /notificaciones/{id}/leer
+   └─> Backend marca como leída
+
+5. Usuario marca todas como leídas
+   └─> Frontend llama: PATCH /notificaciones/usuario/{usuarioId}/leer-todas
+
+
+=====================================================================
+   NOTAS IMPORTANTES
+=====================================================================
+
+1. Los tokens de Expo tienen formato: ExponentPushToken[xxxxxx...]
+2. El servicio de Expo es gratuito hasta 1,000,000 notificaciones/mes
+3. Las notificaciones solo funcionan en dispositivos físicos, no en emuladores
+4. Guarda SIEMPRE las notificaciones en BD antes de enviarlas por push
+5. Los datos JSON en las notificaciones deben ser serializables
+6. El campo 'tipo' es útil para filtrar notificaciones en el frontend
+
+
+=====================================================================
+   ¿NECESITAS AYUDA?
+=====================================================================
+
+Si necesitas ayuda implementando estos endpoints o tienes preguntas
+sobre la estructura, avísame.
+
+Este documento contiene TODO lo necesario para implementar el sistema
+completo de notificaciones push en tu backend.

@@ -1,0 +1,8 @@
+fastapi==0.109.0
+uvicorn==0.27.0
+sqlalchemy==2.0.25
+pydantic==2.5.3
+pymysql==1.1.0
+cryptography==42.0.1
+python-multipart==0.0.6
+exponent-server-sdk==2.1.0

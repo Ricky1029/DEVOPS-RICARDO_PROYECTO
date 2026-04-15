@@ -1,0 +1,99 @@
+{
+  "expo": {
+    "name": "Prestapp",
+    "slug": "Prestappxd",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "prestapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.prestapp.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Esta aplicación necesita acceso a la cámara para escanear códigos QR de préstamos."
+      }
+    },
+    "android": {
+      "package": "com.prestapp.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.CAMERA",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro",
+      "name": "SG-Préstamos",
+      "shortName": "SG-Préstamos",
+      "description": "Sistema de gestión de préstamos de equipos tecnológicos",
+      "themeColor": "#1a3a6b",
+      "backgroundColor": "#ffffff",
+      "display": "standalone",
+      "orientation": "any",
+      "scope": "/",
+      "startUrl": "/",
+      "splash": {
+        "image": "./assets/images/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "firebase": {
+          "apiKey": "AIzaSyCe2hOGo_U3lOX5iTdl9_HAnmj1gLgxc-E",
+          "authDomain": "prestaequipoapp.firebaseapp.com",
+          "projectId": "prestaequipoapp",
+          "storageBucket": "prestaequipoapp.firebasestorage.app",
+          "messagingSenderId": "1002881754476",
+          "appId": "1:1002881754476:web:a3e2caa46dde49cee0f827"
+        }
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#1a3a6b",
+          "sounds": ["./assets/sounds/notification.wav"]
+        }
+      ],
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "owner": "elricky80",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8bf095ac-092a-429d-bf58-524d9b395fe2"
+      }
+    }
+  }
+}
